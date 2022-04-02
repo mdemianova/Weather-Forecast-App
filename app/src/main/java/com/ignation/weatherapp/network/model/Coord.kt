@@ -1,4 +1,4 @@
-package com.ignation.weatherapp.network
+package com.ignation.weatherapp.network.model
 
 data class Coord(
     val lat: Double,

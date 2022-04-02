@@ -1,4 +1,4 @@
-package com.ignation.weatherapp.network
+package com.ignation.weatherapp.network.model
 
 data class Main(
     val feels_like: Double,
