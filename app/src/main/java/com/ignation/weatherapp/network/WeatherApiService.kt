@@ -1,5 +1,6 @@
-package com.ignation.weatherapp
+package com.ignation.weatherapp.network
 
+import com.ignation.weatherapp.API_KEY
 import com.ignation.weatherapp.network.model.WeatherResponse
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
