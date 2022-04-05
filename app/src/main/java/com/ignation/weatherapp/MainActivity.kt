@@ -15,9 +15,12 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.ignation.weatherapp.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 const val PERMISSIONS_RQ = 100
-const val TAG: String = "MainActivity"
+const val TAG: String = "WeatherLog"
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,9 +46,12 @@ class MainActivity : AppCompatActivity() {
         if (checkPermission()) {
             Log.d(TAG, "getLocation: Has permission")
             if (isLocatingEnabled()) {
+                Log.d(TAG, "getLocation: Locating enabled")
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-                    viewModel.currentLocation.value = location
-                    Log.d(TAG, "getLocation: ${viewModel.currentLocation.value?.latitude}")
+                    CoroutineScope(Dispatchers.Main).launch {
+                        viewModel.response.value = viewModel.getResponse(location)
+                        Log.d(TAG, "getLocation: ${viewModel.response.value!!.name}")
+                    }
                 }
             } else {
                 Log.d(TAG, "getLocation: GPS is off")
@@ -57,9 +63,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//  CoroutineScope(Dispatchers.Main).launch {
-//     viewModel.getResponse(it)
-//  }
+    private fun bindViews() {
+        binding.degrees.text = viewModel.convertKelvinToCelsius().toString()
+    }
 
     private fun checkPermission(): Boolean {
         val finePermission = ActivityCompat.checkSelfPermission(
