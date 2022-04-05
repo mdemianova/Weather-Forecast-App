@@ -22,11 +22,18 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface WeatherApiService {
+
     @GET("weather")
     suspend fun getWeatherByCoordinates(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
         @Query("appid") appid: String,
+    ): WeatherResponse
+
+    @GET("weather")
+    suspend fun getWeatherByCityName(
+        @Query("q") cityName: String,
+        @Query("appid") appid: String
     ): WeatherResponse
 }
 

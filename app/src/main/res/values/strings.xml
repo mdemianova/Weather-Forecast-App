@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+    <string name="degree_text">%s \u2103</string>
 </resources>
