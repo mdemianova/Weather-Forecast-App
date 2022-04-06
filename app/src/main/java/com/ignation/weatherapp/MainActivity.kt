@@ -2,6 +2,7 @@ package com.ignation.weatherapp
 
 import android.Manifest
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
@@ -31,16 +32,34 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    lateinit var sharedPreferences: SharedPreferences
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        sharedPreferences = getSharedPreferences(
+        getString(R.string.preference_file_key), Context.MODE_PRIVATE
+        )
 
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
+        val savedLocation = sharedPreferences.getString(LAST_LOCATION, DEFAULT_VALUE)!!
+        if (savedLocation != DEFAULT_VALUE) {
+            performSearchByName(savedLocation)
+        }
+
         getLocation()
+
+        binding.showLocation.setOnClickListener {
+            editLocation()
+        }
+
+        viewModel.response.observe(this) {
+            sharedPreferences.edit().putString(LAST_LOCATION, it.name).apply()
+        }
     }
 
     private fun getLocation() {
@@ -63,7 +82,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.d(TAG, "getLocation: No permission")
             requestPermissions()
-
         }
     }
 
@@ -72,6 +90,17 @@ class MainActivity : AppCompatActivity() {
         binding.showLocation.visibility = View.VISIBLE
         binding.showLocation.text = viewModel.response.value?.name
         binding.degrees.text = getString(R.string.degree_text, viewModel.convertKelvinToCelsius())
+        binding.manualLocation.text.clear()
+    }
+
+    private fun editLocation() {
+        if (binding.showLocation.visibility == View.VISIBLE) {
+            binding.showLocation.visibility = View.GONE
+        }
+        binding.manualLocation.visibility = View.VISIBLE
+        binding.searchButton.visibility = View.VISIBLE
+
+        clickSearchButton()
     }
 
     private fun checkPermission(): Boolean {
@@ -114,38 +143,48 @@ class MainActivity : AppCompatActivity() {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLocation()
             } else {
+
                 enterLocation()
             }
         }
     }
 
     private fun enterLocation() {
-        Toast.makeText(this, "Enter the city name", Toast.LENGTH_SHORT).show()
+        binding.manualLocation.visibility = View.VISIBLE
         binding.searchButton.visibility = View.VISIBLE
 
+        clickSearchButton()
+    }
+
+    private fun clickSearchButton() {
         binding.searchButton.setOnClickListener {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(it.windowToken, 0)
             binding.progressBar.visibility = View.VISIBLE
             val cityName = binding.manualLocation.text.toString()
-            var isError = false
-            CoroutineScope(Dispatchers.Main).launch {
-                try {
-                    viewModel.response.value = viewModel.getResponseByName(cityName)
-                } catch (e: HttpException) {
-                    isError = true
-                }
-                if (!isError) {
-                    Log.d(TAG, "enterLocation: Temp ${viewModel.response.value!!.main.temp}")
-                    Log.d(TAG, "enterLocation: Name ${viewModel.response.value!!.name}")
-                    binding.progressBar.visibility = View.GONE
-                    it.visibility = View.INVISIBLE
-                    bindViews()
-                } else {
-                    Toast.makeText(this@MainActivity, "No information about $cityName", Toast.LENGTH_SHORT).show()
-                    binding.progressBar.visibility = View.GONE
-                }
+            performSearchByName(cityName)
+        }
+    }
 
+    private fun performSearchByName(cityName: String) {
+        var isError = false
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                viewModel.response.value = viewModel.getResponseByName(cityName)
+            } catch (e: HttpException) {
+                isError = true
+            }
+            if (!isError) {
+                binding.progressBar.visibility = View.GONE
+                binding.searchButton.visibility = View.INVISIBLE
+                bindViews()
+            } else {
+                Toast.makeText(
+                    this@MainActivity,
+                    "No information about $cityName",
+                    Toast.LENGTH_SHORT
+                ).show()
+                binding.progressBar.visibility = View.GONE
             }
         }
     }
