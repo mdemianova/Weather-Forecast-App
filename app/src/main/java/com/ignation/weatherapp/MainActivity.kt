@@ -1,10 +1,8 @@
 package com.ignation.weatherapp
 
-import android.Manifest
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,7 +10,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.ignation.weatherapp.databinding.ActivityMainBinding
@@ -21,37 +18,34 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
-const val PERMISSIONS_RQ = 100
-const val TAG: String = "WeatherLog"
+const val TAG: String = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: WeatherViewModel by viewModels()
-    private lateinit var locationManager: LocationManager
 
     private lateinit var binding: ActivityMainBinding
-
+    private lateinit var userSettings: UserSettings
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var sharedPreferences: SharedPreferences
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        userSettings = UserSettings(this)
+
         sharedPreferences = getSharedPreferences(
         getString(R.string.preference_file_key), Context.MODE_PRIVATE
         )
 
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         val savedLocation = sharedPreferences.getString(LAST_LOCATION, DEFAULT_VALUE)!!
         if (savedLocation != DEFAULT_VALUE) {
             performSearchByName(savedLocation)
         }
-
-        getLocation()
 
         binding.showLocation.setOnClickListener {
             editLocation()
@@ -62,10 +56,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        getLocation()
+    }
+
     private fun getLocation() {
-        if (checkPermission()) {
+        if (userSettings.checkPermission(this)) {
             Log.d(TAG, "getLocation: Has permission")
-            if (isLocatingEnabled()) {
+            if (userSettings.isLocatingEnabled()) {
                 Log.d(TAG, "getLocation: Locating enabled")
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                     binding.progressBar.visibility = View.VISIBLE
@@ -81,7 +80,7 @@ class MainActivity : AppCompatActivity() {
             }
         } else {
             Log.d(TAG, "getLocation: No permission")
-            requestPermissions()
+            userSettings.requestPermissions(this)
         }
     }
 
@@ -103,35 +102,6 @@ class MainActivity : AppCompatActivity() {
         clickSearchButton()
     }
 
-    private fun checkPermission(): Boolean {
-        val finePermission = ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        val coarsePermission = ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        return finePermission || coarsePermission
-    }
-
-    private fun requestPermissions() {
-        val permissionsToRequest = mutableListOf<String>()
-        if (!checkPermission()) {
-            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
-            permissionsToRequest.add(Manifest.permission.ACCESS_COARSE_LOCATION)
-        }
-
-        if (permissionsToRequest.isNotEmpty()) {
-            ActivityCompat.requestPermissions(
-                this,
-                permissionsToRequest.toTypedArray(),
-                PERMISSIONS_RQ
-            )
-        }
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -143,7 +113,6 @@ class MainActivity : AppCompatActivity() {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLocation()
             } else {
-
                 enterLocation()
             }
         }
@@ -152,7 +121,6 @@ class MainActivity : AppCompatActivity() {
     private fun enterLocation() {
         binding.manualLocation.visibility = View.VISIBLE
         binding.searchButton.visibility = View.VISIBLE
-
         clickSearchButton()
     }
 
@@ -187,10 +155,5 @@ class MainActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.GONE
             }
         }
-    }
-
-    private fun isLocatingEnabled(): Boolean {
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 }
