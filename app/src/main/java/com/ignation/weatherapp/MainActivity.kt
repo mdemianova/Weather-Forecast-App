@@ -3,13 +3,13 @@ package com.ignation.weatherapp
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.ignation.weatherapp.databinding.ActivityMainBinding
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                     binding.progressBar.visibility = View.VISIBLE
                     CoroutineScope(Dispatchers.Main).launch {
-                        viewModel.response.value = viewModel.getResponseByLocation(location)
+                        viewModel.setResponse(viewModel.getResponseByLocation(location))
                         binding.progressBar.visibility = View.GONE
                         bindViews()
                     }
@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
         var isError = false
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                viewModel.response.value = viewModel.getResponseByName(cityName)
+                viewModel.setResponse(viewModel.getResponseByName(cityName))
             } catch (e: HttpException) {
                 isError = true
             }

@@ -1,10 +1,9 @@
 package com.ignation.weatherapp
 
 import android.content.Context
-import android.icu.text.DecimalFormat
-import android.icu.text.NumberFormat
 import android.location.Location
 import android.widget.Toast
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ignation.weatherapp.network.WeatherApi
@@ -14,7 +13,12 @@ const val DEGREE_DELTA = 273.15
 
 class WeatherViewModel : ViewModel() {
 
-    val response = MutableLiveData<WeatherResponse>()
+    private val _response = MutableLiveData<WeatherResponse>()
+    val response: LiveData<WeatherResponse> = _response
+
+    fun setResponse(weatherResponse: WeatherResponse) {
+        _response.value = weatherResponse
+    }
 
     suspend fun getResponseByLocation(location: Location): WeatherResponse {
         return WeatherApi.retrofitService.getWeatherByCoordinates(location.latitude, location.longitude, API_KEY)
@@ -25,7 +29,7 @@ class WeatherViewModel : ViewModel() {
     }
 
     fun convertKelvinToCelsius(): String {
-        val degree = response.value!!.main.temp.minus(DEGREE_DELTA)
+        val degree = _response.value!!.main.temp.minus(DEGREE_DELTA)
         var result = String.format("%.1f", degree)
         if (degree >= 0.0) {
             result = "+$result"
