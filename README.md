@@ -1,4 +1,4 @@
-# WeatherApp
+# Weather-Forecast-App
 
 Weather forecast app for Android.
 
