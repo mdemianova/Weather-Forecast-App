@@ -30,7 +30,7 @@ class WeatherViewModel : ViewModel() {
 
     fun convertKelvinToCelsius(): String {
         val degree = _response.value!!.main.temp.minus(DEGREE_DELTA)
-        var result = String.format("%.1f", degree)
+        var result = degree.toInt().toString()
         if (degree >= 0.0) {
             result = "+$result"
         }

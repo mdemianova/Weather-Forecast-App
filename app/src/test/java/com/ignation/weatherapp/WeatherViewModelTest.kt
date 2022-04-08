@@ -30,37 +30,33 @@ class WeatherViewModelTest {
         assertEquals(100.1, viewModel.response.value!!.main.temp, 0.0)
     }
 
-
     @Test
     fun convertKelvinToCelsiusForPositive() {
-        viewModel.response.observeForever {}
         val mock = mockk<WeatherResponse>()
         every { mock.main.temp } returns 280.45
         viewModel.setResponse(mock)
         val display = viewModel.convertKelvinToCelsius()
 
-        assertEquals("Temperature display is wrong","+7,3", display)
+        assertEquals("Temperature display is wrong","+7", display)
     }
 
     @Test
     fun convertKelvinToCelsiusForNegative() {
-        viewModel.response.observeForever {}
         val mock = mockk<WeatherResponse>()
         every { mock.main.temp } returns 250.77
         viewModel.setResponse(mock)
         val display = viewModel.convertKelvinToCelsius()
 
-        assertEquals("Temperature display is wrong","-22,4", display)
+        assertEquals("Temperature display is wrong","-22", display)
     }
 
     @Test
     fun convertKelvinToCelsiusFor0() {
-        viewModel.response.observeForever {}
         val mock = mockk<WeatherResponse>()
         every { mock.main.temp } returns 273.15
         viewModel.setResponse(mock)
         val display = viewModel.convertKelvinToCelsius()
 
-        assertEquals("Temperature display is wrong","+0,0", display)
+        assertEquals("Temperature display is wrong","+0", display)
     }
 }

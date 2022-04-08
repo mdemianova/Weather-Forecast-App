@@ -58,20 +58,27 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        Log.d(TAG, "onStart: called")
         getLocation()
     }
 
     private fun getLocation() {
+        Log.d(TAG, "getLocation: called")
         if (userSettings.checkPermission(this)) {
             Log.d(TAG, "getLocation: Has permission")
             if (userSettings.isLocatingEnabled()) {
                 Log.d(TAG, "getLocation: Locating enabled")
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
-                    binding.progressBar.visibility = View.VISIBLE
-                    CoroutineScope(Dispatchers.Main).launch {
-                        viewModel.setResponse(viewModel.getResponseByLocation(location))
-                        binding.progressBar.visibility = View.GONE
-                        bindViews()
+                    Log.d(TAG, "getLocation: success")
+                    if (location != null) {
+                        binding.progressBar.visibility = View.VISIBLE
+                        CoroutineScope(Dispatchers.Main).launch {
+                            viewModel.setResponse(viewModel.getResponseByLocation(location))
+                            binding.progressBar.visibility = View.GONE
+                            bindViews()
+                        }
+                    } else {
+                        enterLocation()
                     }
                 }
             } else {
@@ -85,11 +92,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindViews() {
-        binding.manualLocation.visibility = View.GONE
+        binding.manualLocation.visibility = View.INVISIBLE
         binding.showLocation.visibility = View.VISIBLE
         binding.showLocation.text = viewModel.response.value?.name
-        binding.degrees.text = getString(R.string.degree_text, viewModel.convertKelvinToCelsius())
+        binding.degreeDisplay.text = getString(R.string.degree_text, viewModel.convertKelvinToCelsius())
         binding.manualLocation.text.clear()
+        binding.weatherDesc.text = viewModel.response.value!!.weather[0].description.replaceFirstChar {
+            it.titlecase()
+        }
+        setImage()
     }
 
     private fun editLocation() {
@@ -100,6 +111,23 @@ class MainActivity : AppCompatActivity() {
         binding.searchButton.visibility = View.VISIBLE
 
         clickSearchButton()
+    }
+
+    private fun setImage() {
+        val image: Int = when (viewModel.response.value!!.weather[0].main) {
+            "Clear" -> R.drawable.sun
+            "Rain" -> R.drawable.rain
+            "Smoke" -> R.drawable.fog
+            "Mist" -> R.drawable.fog
+            "Clouds" -> R.drawable.cloudy
+            "Drizzle" -> R.drawable.drizzle
+            "Thunderstorm" -> R.drawable.thunder
+            "Tornado" -> R.drawable.wind
+
+            else -> R.drawable.small_clouds
+        }
+
+        binding.weatherImage.setImageResource(image)
     }
 
     override fun onRequestPermissionsResult(
