@@ -1,4 +1,4 @@
-# WeatherApp
+# Weather-Forecast-App
 
 Weather forecast app for Android.
 
@@ -8,4 +8,4 @@ By building this project I learned:
 - work with runtime permissions
 - get user location
 
-For data I used free API: <a href="https://openweathermap.org/api" target="_blank">OpenWeather</a>
+I get current weather data from free API: <a href="https://openweathermap.org/api" target="_blank">OpenWeather</a>
