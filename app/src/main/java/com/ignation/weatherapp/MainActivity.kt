@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.ignation.weatherapp.databinding.ActivityMainBinding
+import com.ignation.weatherapp.network.model.WeatherResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                         CoroutineScope(Dispatchers.Main).launch {
                             viewModel.setResponse(viewModel.getResponseByLocation(location))
                             binding.progressBar.visibility = View.GONE
-                            bindViews()
+                            bindViews(viewModel.response.value!!)
                         }
                     } else {
                         enterLocation()
@@ -91,15 +92,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun bindViews() {
+    private fun bindViews(response: WeatherResponse) {
         binding.manualLocation.visibility = View.INVISIBLE
         binding.showLocation.visibility = View.VISIBLE
-        binding.showLocation.text = viewModel.response.value?.name
+        binding.showLocation.text = response.name
         binding.degreeDisplay.text = getString(R.string.degree_text, viewModel.convertKelvinToCelsius())
         binding.manualLocation.text.clear()
-        binding.weatherDesc.text = viewModel.response.value!!.weather[0].description.replaceFirstChar {
+        binding.weatherDesc.text = response.weather[0].description.replaceFirstChar {
             it.titlecase()
         }
+        binding.humidityData.text = getString(R.string.humidity_level, response.main.humidity)
+        binding.windData.text = getString(R.string.wind_level, response.wind.speed)
+        binding.visibilityData.text = getString(R.string.visibility_level, response.visibility / 1000)
         setImage()
     }
 
@@ -173,7 +177,7 @@ class MainActivity : AppCompatActivity() {
             if (!isError) {
                 binding.progressBar.visibility = View.GONE
                 binding.searchButton.visibility = View.INVISIBLE
-                bindViews()
+                bindViews(viewModel.response.value!!)
             } else {
                 Toast.makeText(
                     this@MainActivity,
