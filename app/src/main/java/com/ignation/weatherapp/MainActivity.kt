@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.ignation.weatherapp.databinding.ActivityMainBinding
-import com.ignation.weatherapp.network.model.WeatherResponse
+import com.ignation.weatherapp.network.model.currentweather.WeatherResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

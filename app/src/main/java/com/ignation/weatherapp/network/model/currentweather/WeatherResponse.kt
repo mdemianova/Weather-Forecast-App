@@ -1,4 +1,4 @@
-package com.ignation.weatherapp.network.model
+package com.ignation.weatherapp.network.model.currentweather
 
 data class WeatherResponse(
     val base: String,

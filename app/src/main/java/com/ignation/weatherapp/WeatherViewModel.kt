@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ignation.weatherapp.network.WeatherApi
-import com.ignation.weatherapp.network.model.WeatherResponse
+import com.ignation.weatherapp.network.model.currentweather.WeatherResponse
 
 const val DEGREE_DELTA = 273.15
 

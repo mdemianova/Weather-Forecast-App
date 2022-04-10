@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="match_parent">
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/day_background"
     tools:context=".MainActivity">
 
@@ -36,18 +41,13 @@
 
     <EditText
         android:id="@+id/manual_location"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
         android:hint="@string/location"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/white"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/location_icon"
         app:layout_constraintEnd_toStartOf="@+id/searchButton"
         app:layout_constraintStart_toEndOf="@+id/location_icon"
-        app:layout_constraintTop_toTopOf="@+id/location_icon" />
+        app:layout_constraintTop_toTopOf="@+id/location_icon"
+        style="@style/Widget.WeatherApp.EditText" />
 
     <ImageView
         android:id="@+id/location_icon"
@@ -73,10 +73,7 @@
 
     <Button
         android:id="@+id/searchButton"
-        style="@style/Widget.App.Button.OutlinedButton.IconOnly"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        style="@style/Widget.WeatherApp.Button"
         android:visibility="invisible"
         app:icon="@drawable/ic_baseline_search_24"
         app:layout_constraintBottom_toBottomOf="@+id/manual_location"
@@ -87,7 +84,7 @@
         android:id="@+id/weather_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -108,7 +105,7 @@
 
     <View
         android:id="@+id/divider"
-        android:layout_width="250dp"
+        android:layout_width="200dp"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
         android:background="@color/white_fading"
@@ -121,8 +118,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:paddingBottom="24dp"
         android:gravity="center"
-
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -219,3 +216,4 @@
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
+</LinearLayout>
