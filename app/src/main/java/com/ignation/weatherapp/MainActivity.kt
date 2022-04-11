@@ -1,14 +1,17 @@
 package com.ignation.weatherapp
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -38,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         userSettings = UserSettings(this)
 
         sharedPreferences = getSharedPreferences(
-        getString(R.string.preference_file_key), Context.MODE_PRIVATE
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE
         )
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -65,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getLocation() {
         Log.d(TAG, "getLocation: called")
-        if (userSettings.checkPermission(this)) {
+        if (userSettings.checkPermission()) {
             Log.d(TAG, "getLocation: Has permission")
             if (userSettings.isLocatingEnabled()) {
                 Log.d(TAG, "getLocation: Locating enabled")
@@ -83,27 +86,35 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                Log.d(TAG, "getLocation: GPS is off")
-                viewModel.showDenyMessage(this)
+                val savedLocation = sharedPreferences.getString(LAST_LOCATION, DEFAULT_VALUE)!!
+                if (savedLocation == DEFAULT_VALUE) {
+                    showGpsDialog()
+                }
             }
         } else {
             Log.d(TAG, "getLocation: No permission")
-            userSettings.requestPermissions(this)
+            userSettings.requestPermissions()
         }
     }
 
     private fun bindViews(response: WeatherResponse) {
-        binding.manualLocation.visibility = View.INVISIBLE
-        binding.showLocation.visibility = View.VISIBLE
-        binding.showLocation.text = response.name
-        binding.degreeDisplay.text = getString(R.string.degree_text, viewModel.convertKelvinToCelsius())
-        binding.manualLocation.text.clear()
-        binding.weatherDesc.text = response.weather[0].description.replaceFirstChar {
-            it.titlecase()
+        binding.apply {
+            manualLocation.visibility = View.INVISIBLE
+            showLocation.visibility = View.VISIBLE
+            showLocation.text = response.name
+            degreeDisplay.text = getString(R.string.degree_text, viewModel.convertKelvinToCelsius())
+            manualLocation.text.clear()
+            weatherDesc.text = response.weather[0].description.replaceFirstChar {
+                it.titlecase()
+            }
+            humidityData.text = getString(R.string.humidity_level, response.main.humidity)
+            windData.text = getString(R.string.wind_level, response.wind.speed)
+            visibilityData.text =
+                getString(R.string.visibility_level, response.visibility / 1000)
+            divider.visibility = View.VISIBLE
+            weatherIndicators.visibility = View.VISIBLE
         }
-        binding.humidityData.text = getString(R.string.humidity_level, response.main.humidity)
-        binding.windData.text = getString(R.string.wind_level, response.wind.speed)
-        binding.visibilityData.text = getString(R.string.visibility_level, response.visibility / 1000)
+
         setImage()
     }
 
@@ -187,5 +198,21 @@ class MainActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.GONE
             }
         }
+    }
+
+    private fun showGpsDialog() {
+        val gpsDialog = AlertDialog.Builder(this)
+            .setTitle(R.string.gps_dialog_title)
+            .setMessage(R.string.gps_dialog_message)
+            .setIcon(R.drawable.ic_baseline_gps_fixed_24)
+            .setPositiveButton("Turn on") { _, _ ->
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel") { _, _ ->
+                enterLocation()
+            }.create()
+
+        gpsDialog.show()
     }
 }

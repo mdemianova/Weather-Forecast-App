@@ -1,8 +1,6 @@
 package com.ignation.weatherapp
 
-import android.content.Context
 import android.location.Location
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -35,9 +33,5 @@ class WeatherViewModel : ViewModel() {
             result = "+$result"
         }
         return result
-    }
-
-    fun showDenyMessage(context: Context) {
-        Toast.makeText(context, "Please turn on GPS location", Toast.LENGTH_SHORT).show()
     }
 }

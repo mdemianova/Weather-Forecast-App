@@ -9,5 +9,7 @@
     <string name="wind_level">%.1fm/s</string>
     <string name="visibility_level">%dkm</string>
     <string name="location">Location</string>
+    <string name="gps_dialog_title">GPS is off</string>
+    <string name="gps_dialog_message">Please turn on GPS</string>
 
 </resources>
