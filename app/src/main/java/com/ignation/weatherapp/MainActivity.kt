@@ -78,8 +78,10 @@ class MainActivity : AppCompatActivity() {
                         binding.progressBar.visibility = View.VISIBLE
                         CoroutineScope(Dispatchers.Main).launch {
                             viewModel.setResponse(viewModel.getResponseByLocation(location))
+                            viewModel.setForecast(viewModel.getFutureForecast())
                             binding.progressBar.visibility = View.GONE
                             bindViews(viewModel.response.value!!)
+                            bindRecyclerView()
                         }
                     } else {
                         enterLocation()
@@ -115,7 +117,12 @@ class MainActivity : AppCompatActivity() {
             weatherIndicators.visibility = View.VISIBLE
         }
 
-        setImage()
+        setImage(viewModel.response.value!!.weather[0].main, binding.weatherImage)
+    }
+
+    private fun bindRecyclerView() {
+        val adapter = ForecastAdapter(viewModel.forecast.value!!.asModel())
+        binding.recyclerForecast.adapter = adapter
     }
 
     private fun editLocation() {
@@ -126,23 +133,6 @@ class MainActivity : AppCompatActivity() {
         binding.searchButton.visibility = View.VISIBLE
 
         clickSearchButton()
-    }
-
-    private fun setImage() {
-        val image: Int = when (viewModel.response.value!!.weather[0].main) {
-            "Clear" -> R.drawable.sun
-            "Rain" -> R.drawable.rain
-            "Smoke" -> R.drawable.fog
-            "Mist" -> R.drawable.fog
-            "Clouds" -> R.drawable.cloudy
-            "Drizzle" -> R.drawable.drizzle
-            "Thunderstorm" -> R.drawable.thunder
-            "Tornado" -> R.drawable.wind
-
-            else -> R.drawable.small_clouds
-        }
-
-        binding.weatherImage.setImageResource(image)
     }
 
     override fun onRequestPermissionsResult(
@@ -182,6 +172,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 viewModel.setResponse(viewModel.getResponseByName(cityName))
+                viewModel.setForecast(viewModel.getFutureForecast())
             } catch (e: HttpException) {
                 isError = true
             }
@@ -189,6 +180,7 @@ class MainActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.GONE
                 binding.searchButton.visibility = View.INVISIBLE
                 bindViews(viewModel.response.value!!)
+                bindRecyclerView()
             } else {
                 Toast.makeText(
                     this@MainActivity,

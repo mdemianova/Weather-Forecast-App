@@ -3,7 +3,7 @@ package com.ignation.weatherapp.network.model.futureweather
 data class Daily(
     val clouds: Int,
     val dew_point: Double,
-    val dt: Int,
+    val dt: Long,
     val feels_like: FeelsLike,
     val humidity: Int,
     val moon_phase: Double,
@@ -11,7 +11,7 @@ data class Daily(
     val moonset: Int,
     val pop: Double,
     val pressure: Int,
-    val rain: Double,
+    val rain: Double?,
     val sunrise: Int,
     val sunset: Int,
     val temp: Temp,
