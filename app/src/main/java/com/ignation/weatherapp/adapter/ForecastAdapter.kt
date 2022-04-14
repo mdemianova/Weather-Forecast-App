@@ -1,11 +1,14 @@
-package com.ignation.weatherapp
+package com.ignation.weatherapp.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.ignation.weatherapp.convertDegreeToString
+import com.ignation.weatherapp.convertLongToDate
 import com.ignation.weatherapp.databinding.ForecastLayoutBinding
+import com.ignation.weatherapp.setImage
 
-class ForecastAdapter(val forecasts: List<Forecast>) : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
+class ForecastAdapter(private val forecasts: List<Forecast>) : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
 
     class ForecastViewHolder(val binding: ForecastLayoutBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -17,7 +20,7 @@ class ForecastAdapter(val forecasts: List<Forecast>) : RecyclerView.Adapter<Fore
 
     override fun onBindViewHolder(holder: ForecastViewHolder, position: Int) {
         holder.binding.apply {
-            forecastDegree.text = forecasts[position].temp.toInt().toString()
+            forecastDegree.text = convertDegreeToString(forecasts[position].temp)
             setImage(forecasts[position].weatherCondition, forecastWeatherImage)
             forecastDate.text = convertLongToDate(forecasts[position].date)
         }

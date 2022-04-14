@@ -1,14 +1,14 @@
-package com.ignation.weatherapp
+package com.ignation.weatherapp.viewmodel
 
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.ignation.weatherapp.API_KEY
 import com.ignation.weatherapp.network.WeatherApi
 import com.ignation.weatherapp.network.model.currentweather.WeatherResponse
 import com.ignation.weatherapp.network.model.futureweather.FutureForecastResponse
 
-const val DEGREE_DELTA = 273.15
 const val EXCLUDE = "current,minutely,hourly,alerts"
 
 class WeatherViewModel : ViewModel() {
@@ -31,12 +31,13 @@ class WeatherViewModel : ViewModel() {
         return WeatherApi.retrofitService.getWeatherByCoordinates(
             location.latitude,
             location.longitude,
+            "metric",
             API_KEY
         )
     }
 
     suspend fun getResponseByName(name: String): WeatherResponse {
-        return WeatherApi.retrofitService.getWeatherByCityName(name, API_KEY)
+        return WeatherApi.retrofitService.getWeatherByCityName(name, "metric",API_KEY)
     }
 
     suspend fun getFutureForecast(): FutureForecastResponse {
@@ -47,14 +48,5 @@ class WeatherViewModel : ViewModel() {
             "metric",
             API_KEY
         )
-    }
-
-    fun convertKelvinToCelsius(): String {
-        val degree = _response.value!!.main.temp.minus(DEGREE_DELTA)
-        var result = degree.toInt().toString()
-        if (degree >= 0.0) {
-            result = "+$result"
-        }
-        return result
     }
 }

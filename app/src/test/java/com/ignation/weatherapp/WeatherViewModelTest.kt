@@ -2,6 +2,7 @@ package com.ignation.weatherapp
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.ignation.weatherapp.network.model.currentweather.WeatherResponse
+import com.ignation.weatherapp.viewmodel.WeatherViewModel
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertEquals

@@ -1,6 +1,6 @@
 package com.ignation.weatherapp.network.model.futureweather
 
-import com.ignation.weatherapp.Forecast
+import com.ignation.weatherapp.adapter.Forecast
 
 data class FutureForecastResponse(
     val daily: List<Daily>,
@@ -11,7 +11,7 @@ data class FutureForecastResponse(
 ) {
     fun asModel(): List<Forecast> {
         val list = mutableListOf<Forecast>()
-        for (i in daily.indices) {
+        for (i in 1 until daily.size) {
             list.add(
                 Forecast(
                     temp = daily[i].temp.day,

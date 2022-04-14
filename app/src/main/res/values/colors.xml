@@ -11,4 +11,6 @@
     <color name="day_background_dark">#6da0ff</color>
     <color name="blue">#3574eb</color>
     <color name="white_fading">#65FFFFFF</color>
+    <color name="small_background">#f4f8ff</color>
+    <color name="forecast_font">#040815</color>
 </resources>

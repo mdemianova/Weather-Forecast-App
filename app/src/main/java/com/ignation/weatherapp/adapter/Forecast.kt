@@ -1,4 +1,4 @@
-package com.ignation.weatherapp
+package com.ignation.weatherapp.adapter
 
 data class Forecast(
     val temp: Double,

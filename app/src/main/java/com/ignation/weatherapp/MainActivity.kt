@@ -15,8 +15,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.ignation.weatherapp.adapter.ForecastAdapter
 import com.ignation.weatherapp.databinding.ActivityMainBinding
 import com.ignation.weatherapp.network.model.currentweather.WeatherResponse
+import com.ignation.weatherapp.viewmodel.WeatherViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -104,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             manualLocation.visibility = View.INVISIBLE
             showLocation.visibility = View.VISIBLE
             showLocation.text = response.name
-            degreeDisplay.text = getString(R.string.degree_text, viewModel.convertKelvinToCelsius())
+            degreeDisplay.text = convertDegreeToString(viewModel.response.value!!.main.temp)
             manualLocation.text.clear()
             weatherDesc.text = response.weather[0].description.replaceFirstChar {
                 it.titlecase()
@@ -121,6 +123,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindRecyclerView() {
+        binding.nextDaysTitle.visibility = View.VISIBLE
         val adapter = ForecastAdapter(viewModel.forecast.value!!.asModel())
         binding.recyclerForecast.adapter = adapter
     }
@@ -146,7 +149,9 @@ class MainActivity : AppCompatActivity() {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLocation()
             } else {
-                enterLocation()
+                if (sharedPreferences.getString(LAST_LOCATION, DEFAULT_VALUE) == DEFAULT_VALUE) {
+                    enterLocation()
+                }
             }
         }
     }

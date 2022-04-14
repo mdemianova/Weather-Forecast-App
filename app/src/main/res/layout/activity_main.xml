@@ -18,7 +18,6 @@
         android:id="@+id/degree_display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-medium"
         android:textColor="@color/white"
         android:textSize="60sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -148,6 +147,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:textSize="16sp"
                 android:textColor="@color/white"
                 tools:text="50%" />
 
@@ -177,6 +177,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:textSize="16sp"
                 tools:text="1,2m/s"
                 android:textColor="@color/white" />
 
@@ -205,6 +206,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:textSize="16sp"
                 android:textColor="@color/white"
                 tools:text="10km" />
 
@@ -220,11 +222,23 @@
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <TextView
+        android:id="@+id/nextDaysTitle"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/forecast_font"
+        android:textSize="20sp"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/next_7_days"/>
+
 <androidx.recyclerview.widget.RecyclerView
-    android:layout_margin="16dp"
+    android:padding="16dp"
     android:id="@+id/recycler_forecast"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clipToPadding="false"
     android:orientation="horizontal"
     tools:listitem="@layout/forecast_layout"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
