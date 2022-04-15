@@ -11,4 +11,7 @@ By building this project I learned:
 
 Location can be determined by accepting location permissions and turning on GPS. Alternatively, a user can enter the desired location manually.
 
-<img src="images/weather_screenshot.png" width="250" border="2">
+<p float="left">
+<img src="images/weather_screenshot.png" width="250">
+<img src="images/location_screenshot.png" width="250">
+</p>
