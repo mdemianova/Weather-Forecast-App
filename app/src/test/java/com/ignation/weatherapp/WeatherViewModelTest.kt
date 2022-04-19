@@ -2,6 +2,7 @@ package com.ignation.weatherapp
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.ignation.weatherapp.network.model.currentweather.WeatherResponse
+import com.ignation.weatherapp.network.model.futureweather.FutureForecastResponse
 import com.ignation.weatherapp.viewmodel.WeatherViewModel
 import io.mockk.every
 import io.mockk.mockk
@@ -32,32 +33,11 @@ class WeatherViewModelTest {
     }
 
     @Test
-    fun convertKelvinToCelsiusForPositive() {
-        val mock = mockk<WeatherResponse>()
-        every { mock.main.temp } returns 280.45
-        viewModel.setResponse(mock)
-        val display = viewModel.convertKelvinToCelsius()
+    fun setForecastReturnsTomorrowDayTemperature25_4() {
+        val mock = mockk<FutureForecastResponse>()
+        every { mock.daily[1].temp.day } returns 25.4
+        viewModel.setForecast(mock)
 
-        assertEquals("Temperature display is wrong","+7", display)
-    }
-
-    @Test
-    fun convertKelvinToCelsiusForNegative() {
-        val mock = mockk<WeatherResponse>()
-        every { mock.main.temp } returns 250.77
-        viewModel.setResponse(mock)
-        val display = viewModel.convertKelvinToCelsius()
-
-        assertEquals("Temperature display is wrong","-22", display)
-    }
-
-    @Test
-    fun convertKelvinToCelsiusFor0() {
-        val mock = mockk<WeatherResponse>()
-        every { mock.main.temp } returns 273.15
-        viewModel.setResponse(mock)
-        val display = viewModel.convertKelvinToCelsius()
-
-        assertEquals("Temperature display is wrong","+0", display)
+        assertEquals(25.4, viewModel.forecast.value!!.daily[1].temp.day, 0.0)
     }
 }

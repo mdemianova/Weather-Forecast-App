@@ -2,6 +2,7 @@ package com.ignation.weatherapp
 
 import android.widget.ImageView
 import java.text.SimpleDateFormat
+import java.util.*
 
 const val LAST_LOCATION = "last_location"
 const val DEFAULT_VALUE = ""
@@ -24,14 +25,14 @@ fun setImage(description: String, view: ImageView) {
     view.setImageResource(image)
 }
 
-fun convertLongToDate(long: Long): String {
-    val sdf = SimpleDateFormat("d MMM")
+fun convertLongToDate(long: Long, locale: Locale = Locale.getDefault()): String {
+    val sdf = SimpleDateFormat("d MMM", locale)
     return sdf.format(long * 1000)
 }
 
 fun convertDegreeToString(degree: Double): String {
     var result = "${degree.toInt()}\u2103"
-    if (degree >= 0.0) {
+    if (degree >= 1.0) {
         result = "+$result"
     }
     return result
