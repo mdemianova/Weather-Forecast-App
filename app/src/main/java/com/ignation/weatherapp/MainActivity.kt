@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -64,12 +66,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        Log.d(TAG, "onStart: called")
-        getLocation()
+        if (isOnline()) {
+            getLocation()
+        } else {
+            showOffline()
+        }
     }
 
     private fun getLocation() {
-        Log.d(TAG, "getLocation: called")
         if (userSettings.checkPermission()) {
             Log.d(TAG, "getLocation: Has permission")
             if (userSettings.isLocatingEnabled()) {
@@ -104,6 +108,7 @@ class MainActivity : AppCompatActivity() {
     private fun bindViews(response: WeatherResponse) {
         binding.apply {
             manualLocation.visibility = View.INVISIBLE
+            binding.internetImage.visibility = View.GONE
             showLocation.visibility = View.VISIBLE
             showLocation.text = response.name
             degreeDisplay.text = convertDegreeToString(viewModel.response.value!!.main.temp)
@@ -211,5 +216,39 @@ class MainActivity : AppCompatActivity() {
             }.create()
 
         gpsDialog.show()
+    }
+
+    private fun isOnline(): Boolean {
+        val connectivityManager =
+            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectivityManager != null) {
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                when {
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    private fun showOffline() {
+        if (binding.weatherImage.drawable == null) {
+            Toast.makeText(this, "No Internet connection", Toast.LENGTH_SHORT).show()
+        } else {
+            binding.internetImage.visibility = View.VISIBLE
+        }
     }
 }
